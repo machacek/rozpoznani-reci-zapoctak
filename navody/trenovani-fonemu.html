@@ -1,0 +1,187 @@
+﻿<HTML>
+<HEAD>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+</HEAD>
+<BODY>
+<PRE>
+
+-------------Seznam změn--------------
+ 23.2.2003
+ 27.12.2006 (generování souboru phones1.mlf)
+-------------Konec seznamu------------
+
+
+2. Natrénování monofonémů
+
+ 2.1 Vytvoření startovního prototypu monofonémů
+
+  Soubor proto:
+
+~o &lt;VecSize&gt; 39 &lt;MFCC_0_D_A&gt; 
+~h "proto"
+&lt;BeginHMM&gt
+ &lt;NumStates&gt; 5
+ &lt;State&gt; 2
+  &lt;Mean&gt; 39
+   0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+  &lt;Variance&gt; 39
+   1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+ &lt;State&gt; 3
+  &lt;Mean&gt; 39
+   0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+  &lt;Variance&gt; 39
+   1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+ &lt;State&gt; 4
+  &lt;Mean&gt; 39
+   0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+  &lt;Variance&gt; 39
+   1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+ &lt;TransP&gt; 5
+  0.0 1.0 0.0 0.0 0.0
+  0.0 0.6 0.4 0.0 0.0
+  0.0 0.0 0.6 0.4 0.0
+  0.0 0.0 0.0 0.7 0.3
+  0.0 0.0 0.0 0.0 0.0
+&lt;EndHMM&gt
+
+ Dejte pozor při kopírování těchto řádek, aby dlouhé řádky zůstaly zachovány
+ a neobsahovaly odřádkování.
+ Dále budeme potřebovat seznam vech trénovacích vět v souboru train.scp
+ (ten můžeme vygenerovat perl skriptem podobně jako sobour pro kódování
+ genScp.prl  v Přípravě dat, pouze odstraníme tisk sloupce se zvukovými
+ soubory).
+ Konfigurační soubor config převedeme následujícími změnami na nový soubor config1:	
+
+  - změníme řádku TARGETKIND = MFCC_0 na
+
+TARGETKIND = MFCC_0_D_A
+
+    Při načítání trénovacích dat se tak bude dopočítávat první a druhá derivace parametrů,
+
+  - odstraníme vechny řádky začínající řetězcem SOURCE . HTK si při trénování samo
+    přečte formát dat z hlaviček trénovacích mfc-souborů.
+ 
+  Takto ji můžeme spočítat počáteční parametry prototypu následující sekvencí příkazů:
+
+mkdir hmm0; HCompV -T 1 -C config1 -f 0.01 -m -S train.scp -M hmm0 proto
+
+ Výsledkem bude soubor ./hmm0/proto s inicializovaným modelem proto a globální odchylka
+ dat v souboru ./hmm0/vFloors.
+ 
+
+ K vlastnímu trénování nezbývá nic jiného, než zkopírovat proto parametry pro každý foném.
+ To je možné provézt například pomocí skriptu makehmmdefs:
+
+#!/bin/sh
+echo "" >./hmm0/hmmdefs #
+head -n 3 ./hmm0/proto > ./hmm0/macros
+cat ./hmm0/vFloors >> ./hmm0/macros
+for w  in `cat ./monophones0`
+do
+ cat ./hmm0/proto | sed "s/proto/$w/g"|sed "1 d"|sed "1 d"|sed "1 d" >> ./hmm0/hmmdefs
+done
+
+  Skript se snaží první tři řádky souboru ./hmm0/proto společně s obsahem soubor u ./hmm0/vFloors 
+  zkopírovat do odděleného souboru ./hmm0/macros obsahujícího globální informace.
+  Do souboru ./hmm0/hmmdefs uloží pouze definice fonémů (HMM v monophones0).
+  Skript makehmmdefs se spouští bez parametrů:
+
+sh ./makehmmdefs
+  
+
+ 2.2 První série trénování 
+
+mkdir hmm1; HERest -T 1 -C config1 -I phones0.mlf -t 250.0 150.0 1000.0 -S train.scp -H hmm0/macros -H hmm0/hmmdefs -M hmm1 monophones0
+ 
+ a analogicky ještě další dva trénovací cykly do nových direktorářů.
+
+mkdir hmm2; HERest -T 1 -C config1 -I phones0.mlf -t 250.0 150.0 1000.0 -S train.scp -H hmm1/macros -H hmm1/hmmdefs -M hmm2 monophones0
+
+mkdir hmm3; HERest -T 1 -C config1 -I phones0.mlf -t 250.0 150.0 1000.0 -S train.scp -H hmm2/macros -H hmm2/hmmdefs -M hmm3 monophones0
+
+ 2.3 Úprava modelu ticha 
+ 
+ V předchozích trénovacích krocích jsme natrénovali kromě základních fonémů i
+ model ticha sil. Teď je nutné přidat do modelu sil hranu spojující první a
+ poslední uzel v obou směrech, aby byl schopen pohltit ticho s proměnnou délkou
+ trvání. Zároveň vytvoříme jednostavový model pro krátkou mezislovní pauzu
+ to pomocí prostředního stavu modelu ticha. Postupujte následovně:
+
+ - zkopírujte hmm3 do hmm4
+
+cp -r hmm3 hmm4
+
+ - pomocí textového editoru zkopírujte v hmm4/hmmdefs střední stav modelu sil a vytvořte
+   jednostavový model sp (je nutné vytvořit i matici přechodů pro sp na
+   základě hran prostředního stavu v modelu sil). Dejte pozor, ať
+   nezůstanou v souboru žádné prázdné řádky nebo znaky navíc - ani na konci
+   souboru.
+
+ - dále pomocí následujícího skriptu vytvoříte přeskokové hrany v modelech sp, sil a sloučíte
+   parametry jejich prostředího stavu, takže se budou v dalších krocích trénovat společně. 
+   Příkaz a jeho soubory vypadají následovně:
+
+mkdir hmm5; HHEd -H hmm4/macros -H hmm4/hmmdefs -M hmm5 sil.hed monophones1
+
+ kde soubor monophones1 musí obsahovat i model sp a skriptový soubor sil.hed
+ má následjící  obsah:
+
+AT 2 4 0.2 {sil.transP}
+AT 4 2 0.2 {sil.transP}
+AT 1 3 0.3 {sp.transP}
+TI silst {sil.state[3],sp.state[2]}
+
+  S takto upravenými modely opět spusťte dvě kola trénování. Předtím však vygenerujte 
+ pomocí následujícího příkazu nový fonetický přepis phones1.mlf, který již bude 
+ obsahovat mezi slovy model sp.
+
+HLEd -l '*' -d dict -i phones1.mlf mkphones1.led  words.mlf
+
+ Soubor mkphones1.led musí obsahovat následující dva řádky:
+
+EX
+IS sil sil
+
+ Další trénovací cykly pak budou vypadat následovně:
+
+mkdir hmm6; HERest -T 1 -C config1 -I phones1.mlf -t 250.0 150.0 1000.0 \
+-S train.scp -H hmm5/macros -H hmm5/hmmdefs -M hmm6 monophones1;
+
+mkdir hmm7; HERest -T 1 -C config1 -I phones1.mlf -t 250.0 150.0 1000.0 \ 
+-S train.scp -H hmm6/macros -H hmm6/hmmdefs -M hmm7 monophones1; 
+
+
+
+ 2.4 Kontrola trénovacích dat
+
+ V dalším kroku zkontrolujete správnost přepisu trénovacích dat a pokud máte
+ ve výslovnostním slovníku více výslovnostních variant pro jedno slovo, vybere
+ se ta akusticky nejbližší (dosud byla vybrána první varianta). Do slovníku
+ dict předtím zařaďte na začátek nové slovo pro ticho: 
+
+silence   sil
+
+ Vlastní kontrola se spouští takto: 
+ 
+HVite -T 1 -l '*' -o SWT -b silence -C config1 -a -H hmm7/macros \
+ -H hmm7/hmmdefs -i aligned.mlf -m -t 250.0 -I words.mlf \
+ -S train.scp -y lab dict monophones1    
+
+ Výsledkem je nový fonetický přepis v souboru aligned.mlf, v kterém zároveň budou
+ chybět věty, které byly akusticky příliš vzdálené od přepisu. Tyto chybějící
+ věty je nutné odstranit ze seznamu trénovacích vět train.scp. Pak můžeme
+ spustit poslední přetrénovaní modelů:
+
+mkdir hmm8; HERest -T 1 -C config1 -I aligned.mlf -t 250.0 150.0 1000.0 -S \
+train.scp -H hmm7/macros -H hmm7/hmmdefs -M hmm8 monophones1;
+
+mkdir hmm9;  HERest -T 1 -C config1 -I aligned.mlf -t 250.0 150.0 1000.0 -S \
+train.scp -H hmm8/macros -H hmm8/hmmdefs -M hmm9 monophones1;
+
+
+   Výsledné natrénované modely monofonémů jsou v direktoráři hmm9 v souborech hmmdefs a macros.
+
+
+</PRE>
+</BODY>
+</HTML>

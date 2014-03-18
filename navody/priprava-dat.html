@@ -1,0 +1,188 @@
+﻿<HTML>
+<HEAD>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+</HEAD>
+<BODY>
+<PRE>
+
+Stručný přehled trénování HTK modelů
+
+
+
+
+_______________________Popis změn v dokumentu_______________
+03.12.2008
+ export LANG=C 
+11.12.2003
+  (opravil: David Kolovratnik )
+   skript  toMLF.prl nesrážel delší mezery
+   s/  / /g; nahrazeno s/ {1,}/ /g;
+    
+ Fonetický slovník raději ještě po vygenerování zkontrolovat. Některé předpony
+ způsobí nepřepsání některých písmen do fonetické abecedy = ručně opravit.
+
+23.2.2003
+  Spouštění skriptů upraveno na formát "(perl|sh) název_skriptu".
+  Přidána zmínka o formátu souboru vety.txt (1.0).
+  Při generování dict.tmp přidáno odstraňování vykřičníku.
+  Nahrávací skript teď vychází ze souboru vety.txt (místo neexistujícího train.txt) 
+ Vytvoření gramatiky a nahrání testovacích vět popsáno v pozdějsích kapitolách, po natrénování. 
+
+
+16.12.2002
+POZOR: Změna v souboru config -  přidány první dvě řádky pro rozpoznání MS WAV formátu:
+
+SOURCEKIND = WAVEFORM
+SOURCEFORMAT = WAV
+
+______________________Konec popisu změn______________________
+
+
+11.12.2002
+Umístění dokumentu:
+(§ = http://ufal.ms.mff.cuni.cz/~peterek/HTK/)
+
+1. Příprava dat
+ Sada fonémů, fonetický slovník, trénovací a testovací věty
+
+ 1.0 Formát trénovacích textů
+ 
+ Každou větu na samostatné řádce. Co nejméně interpunkce a speciálních znaků.
+ Kódování textu v Latin II. 
+
+ !Před zpracováním textů spustit v terminálovém oknu "export LANG=C", jinak s UTF-8 nepředvídatelné výsledky!
+
+    
+ 1.1 Sada fonémů
+
+  Soubory se seznamem fonémů lze získat z balíku priprava.tgz (ostatně jako všechny soubory uvozené znakem §):
+
+  §monophones0 - bez modelu sp (short pause)
+  §monophones1 - obsahuje navíc model sp
+
+ 1.2 Fonetický slovník 
+
+   - skripty předpokládají znakovou sadu Latin II (iso8859-2)
+
+   - pro čestinu lze vygenerovat fonetický slovník ze seznamu slov 
+     pomocí substitučních pravidel programu sed (skript §vyslov)  
+
+sh ./vyslov dict.tmp dict
+
+   - seznam slov dict.tmp získáme ze souboru vět pomocí skriptu: 
+
+cat vety.txt | sh ./2Cap | tr " :,.?\!" "\n\n\n\n\n" | sort -u > dict.tmp
+
+     Skript §2Cap nám dodá velká písmena české abecedy.
+     Výsledný seznam je nutné ještě očistit od prázdných řádek, případně
+     analogicky přidat do příkazu další nechtěné znaky. 
+   
+  - fonetický slovník raději ještě po vygenerování zkontrolovat. Některé
+    předpony způsobí nepřepsání některých písmen do fonetické abecedy = ručně opravit.
+ 
+1.3 Nahrání vět
+  
+  Za předpokladu, že jsou věty na samostatných řádkách a je jich 140, lze je např. nahrát
+  v linuxu pomocí malého skriptu recordIt.prl:
+    
+
+#!/usr/bin/perl
+$j=1;
+$n=140;
+while($j<$n)
+{ 
+ system "sed -n vety.txt -e \"$j p\""; 
+ system "rec -c 1 -s w -r 22050 S$j.wav"; 
+ # 1 kanal, 16-bit, 22.050 kHz
+ 
+ $j=$j+1;
+}
+
+  Spouští se příkazem:
+
+perl ./recordIt.prl
+
+ 1.4 Příprava gramatiky pro aplikaci a testování
+ 
+  Tu lze nechat až na dobu po natrénování modelů. Podrobněji popsáno v
+  kapitole následující natrénování modelů.
+  Gramatiku je možné nadefinovat v textovém souboru a ten překompilovat
+  HTK příkazem.
+       
+ 1.5 Převod vět do HTK formátu
+
+  - převod vět (na samostatnych řádkách) do slovního interního formátu. Skript
+    toMLF.prl:
+
+#!/usr/bin/perl
+$j=1;
+print "#!MLF!#\n";
+while(<>)
+{
+ s/[;,.?!]/ /g;  		#zbaveni se interpunkce
+ s/ {1,}/ /g; 			#s/  */ /g; #dlouhe mezery srazi na minimum
+ s/^/\"*\/S$j.lab\"\n/g;	#vlozi na zacatek radky identifikator vety
+ s/\s/\n/g;      		#odradkuje mezi kazdym slovem
+ 
+ print $_,".\n"; 		#upravenou vetu vytiskne
+ $j=$j+1;
+}
+
+
+  Ten se poustí na seznam vět v řádkách a generuje slovní formát MLF:
+
+cat vety.txt|perl ./toMLF.prl > words.mlf
+
+  - převod slovního formátu na fonetický formát pomocí HTK příkazu: 
+
+HLEd -l '*' -d dict -i phones0.mlf mkphones0.led  words.mlf
+
+  kde soubor mkphones0.led obsahuje následující tři řádky:
+
+EX
+IS sil sil
+DE sp
+
+ 1.6 Kódování dat
+
+  Nutné připravit konfigurační soubor config:
+
+SOURCEKIND = WAVEFORM 
+SOURCEFORMAT = WAV
+TARGETKIND = MFCC_0
+TARGETRATE = 100000.0
+SAVECOMPRESSED = T
+SAVEWITHCRC = T
+WINDOWSIZE = 250000.0
+USEHAMING = T
+PREEMCOEF = 0.97
+NUMCHANS = 26
+CEPLIFTER = 22
+NUMCEPS = 12
+ENORMALISE = F
+
+  a seznam kódovaných souborů např. pomocí následujícího skriptu genScp.prl:
+
+#!/usr/bin/perl
+$j=1;
+$n=140;
+while ($j<=$n)
+{
+ print "<úplná cesta>S$j.wav  <úplná cesta>S$j.mfc\n"; 
+ $j=$j+1;
+}
+
+  Před jeho spuštěním nezapomeňte změnit ve skriptu text <úplná cesta> na Vaši
+ cestu k souborům. Seznam kódovaných zvukových souborů vygenerujete pak
+ následující řádkou:
+
+perl ./genScp.prl > codestr.scp
+
+  Vlastní kódování zvukových souborů provedeme HTK příkazem:
+
+HCopy -T 1 -C config -S codestr.scp
+
+
+</PRE>
+</BODY>
+</HTML>
