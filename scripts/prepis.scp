@@ -1,77 +1,77 @@
-# Hrubı fonetickı pøepis (skript programu sed, pou¾íván ve spojení s init.scp)
+# HrubÃ½ fonetickÃ½ pÅ™epis (skript programu sed, pouÅ¾Ã­vÃ¡n ve spojenÃ­ s init.scp)
 # 11.9.1997 Autor: Nino Peterek, peterek@ufal.ms.mff.cuni.cz
 
-# namapování nechtìnıch znakù na model ticha
+# namapovÃ¡nÃ­ nechtÄ›nÃ½ch znakÅ¯ na model ticha
 s/^.*[0-9].*$/sil/g
 
-# náhrada víceznakovıch fonémù speciálním znakem, pøípadnì rozepsání znaku na více fonémù
+# nÃ¡hrada vÃ­ceznakovÃ½ch fonÃ©mÅ¯ speciÃ¡lnÃ­m znakem, pÅ™Ã­padnÄ› rozepsÃ¡nÃ­ znaku na vÃ­ce fonÃ©mÅ¯
 s/CH/#/g
 s/W/V/g
 s/Q/KV/g
-s/D®/&/g
+s/DÅ½/&/g
 s/DZ/@/g
 s/X/KS/g
 
-# o¹etøení Ì 
-s/\([BPFV]\)Ì/\1JE/g
-s/DÌ/ÏE/g
-s/TÌ/«E/g
-s/NÌ/ÒE/g
-s/MÌ/MÒE/g
+# oÅ¡etÅ™enÃ­ Äš 
+s/\([BPFV]\)Äš/\1JE/g
+s/DÄš/ÄE/g
+s/TÄš/Å¤E/g
+s/NÄš/Å‡E/g
+s/MÄš/MÅ‡E/g
 
-# zmìkèující i
-s/DI/ÏI/g
-s/TI/«I/g
-s/NI/ÒI/g
-s/DÍ/ÏÍ/g
-s/TÍ/«Í/g
-s/NÍ/ÒÍ/g
+# zmÄ›kÄujÃ­cÃ­ i
+s/DI/ÄI/g
+s/TI/Å¤I/g
+s/NI/Å‡I/g
+s/DÃ/ÄÃ/g
+s/TÃ/Å¤Ã/g
+s/NÃ/Å‡Ã/g
 
-# asimilace znìlosti
+# asimilace znÄ›losti
 s/B$/P/g
-s/B\([PT«KS©CÈ#F]\)/P\1/g
-s/B\([BDÏGZ®@&H]\)$/P\1/g
-s/P\([BDÏGZ®@&H]\)/B\1/g
+s/B\([PTÅ¤KSÅ CÄŒ#F]\)/P\1/g
+s/B\([BDÄGZÅ½@&H]\)$/P\1/g
+s/P\([BDÄGZÅ½@&H]\)/B\1/g
 s/D$/T/g
-s/D\([PT«KS©CÈ#F]\)/T\1/g
-s/D\([BDÏGZ®@&H]\)$/T\1/g
-s/T\([BDÏGZ®@&H]\)/D\1/g
-s/Ï$/«/g
-s/Ï\([PT«KS©CÈ#F]\)/«\1/g
-s/Ï\([BDÏGZ®@&H]\)$/«\1/g
-s/«\([BDÏGZ®@&H]\)/Ï\1/g
+s/D\([PTÅ¤KSÅ CÄŒ#F]\)/T\1/g
+s/D\([BDÄGZÅ½@&H]\)$/T\1/g
+s/T\([BDÄGZÅ½@&H]\)/D\1/g
+s/Ä$/Å¤/g
+s/Ä\([PTÅ¤KSÅ CÄŒ#F]\)/Å¤\1/g
+s/Ä\([BDÄGZÅ½@&H]\)$/Å¤\1/g
+s/Å¤\([BDÄGZÅ½@&H]\)/Ä\1/g
 s/V$/F/g
-s/V\([PT«KS©CÈ#F]\)/F\1/g
-s/V\([BDÏGZ®@&H]\)$/F\1/g
-s/F\([BDÏGZ®@&H]\)/V\1/g
+s/V\([PTÅ¤KSÅ CÄŒ#F]\)/F\1/g
+s/V\([BDÄGZÅ½@&H]\)$/F\1/g
+s/F\([BDÄGZÅ½@&H]\)/V\1/g
 s/G$/K/g
-s/G\([PT«KS©CÈ#F]\)/K\1/g
-s/G\([BDÏGZ®@&H]\)$/K\1/g
-s/K\([BDÏGZ®@&H]\)/G\1/g
+s/G\([PTÅ¤KSÅ CÄŒ#F]\)/K\1/g
+s/G\([BDÄGZÅ½@&H]\)$/K\1/g
+s/K\([BDÄGZÅ½@&H]\)/G\1/g
 s/Z$/S/g
-s/Z\([PT«KS©CÈ#F]\)/S\1/g
-s/Z\([BDÏGZ®@&H]\)$/S\1/g
-s/S\([BDÏGZ®@&H]\)/Z\1/g
-s/®$/©/g
-s/®\([PT«KS©CÈ#F]\)/©\1/g
-s/®\([BDÏGZ®@&H]\)$/©\1/g
-s/©\([BDÏGZ®@&H]\)/®\1/g
+s/Z\([PTÅ¤KSÅ CÄŒ#F]\)/S\1/g
+s/Z\([BDÄGZÅ½@&H]\)$/S\1/g
+s/S\([BDÄGZÅ½@&H]\)/Z\1/g
+s/Å½$/Å /g
+s/Å½\([PTÅ¤KSÅ CÄŒ#F]\)/Å \1/g
+s/Å½\([BDÄGZÅ½@&H]\)$/Å \1/g
+s/Å \([BDÄGZÅ½@&H]\)/Å½\1/g
 s/H$/#/g
-s/H\([PT«KS©CÈ#F]\)/#\1/g
-s/H\([BDÏGZ®@&H]\)$/#\1/g
-s/#\([BDÏGZ®@&H]\)/H\1/g
+s/H\([PTÅ¤KSÅ CÄŒ#F]\)/#\1/g
+s/H\([BDÄGZÅ½@&H]\)$/#\1/g
+s/#\([BDÄGZÅ½@&H]\)/H\1/g
 s/@$/C/g
-s/@\([PT«KS©CÈ#F]\)/C\1/g
-s/@\([BDÏGZ®@&H]\)$/C\1/g
-s/C\([BDÏGZ®@&H]\)/@\1/g
-s/&$/È/g
-s/&\([PT«KS©CÈ#F]\)/È\1/g
-s/&\([BDÏGZ®@&H]\)$/È\1/g
-s/È\([BDÏGZ®@&H]\)/&\1/g
-s/Ø$/>/g
-s/Ø\([PT«KS©CÈ#F]\)/>\1/g
-s/Ø\([BDÏGZ®@&H]\)$/>\1/g
-s/\([PT«KS©CÈ#F]\)Ø/\1>/g
+s/@\([PTÅ¤KSÅ CÄŒ#F]\)/C\1/g
+s/@\([BDÄGZÅ½@&H]\)$/C\1/g
+s/C\([BDÄGZÅ½@&H]\)/@\1/g
+s/&$/ÄŒ/g
+s/&\([PTÅ¤KSÅ CÄŒ#F]\)/ÄŒ\1/g
+s/&\([BDÄGZÅ½@&H]\)$/ÄŒ\1/g
+s/ÄŒ\([BDÄGZÅ½@&H]\)/&\1/g
+s/Å˜$/>/g
+s/Å˜\([PTÅ¤KSÅ CÄŒ#F]\)/>\1/g
+s/Å˜\([BDÄGZÅ½@&H]\)$/>\1/g
+s/\([PTÅ¤KSÅ CÄŒ#F]\)Å˜/\1>/g
 
 
 #zbytek
@@ -79,9 +79,9 @@ s/NK/ng K/g
 s/NG/ng G/g
 s/MV/mg V/g
 s/MF/mg F/g
-s/N«/Ò«/g
-s/NÏ/ÒÏ/g
-s/NÒ/Ò/g
+s/NÅ¤/Å‡Å¤/g
+s/NÄ/Å‡Ä/g
+s/NÅ‡/Å‡/g
 s/CC/C/g
 s/DD/D/g
 s/JJ/J/g
@@ -92,29 +92,29 @@ s/MM/M/g
 s/SS/S/g
 s/TT/T/g
 s/ZZ/Z/g
-s/ÈÈ/È/g
-s/©©/©/g
+s/ÄŒÄŒ/ÄŒ/g
+s/Å Å /Å /g
 s/-//g
 
-# závìreènı pøepis na HTK abecedu
+# zÃ¡vÄ›reÄnÃ½ pÅ™epis na HTK abecedu
 s/>/rsz /g
 s/EU/eu /g
 s/AU/au /g
 s/OU/ou /g
-s/Á/aa /g
-s/È/cz /g
-s/Ï/dj /g
-s/É/ee /g
-s/Í/ii /g
-s/Ò/nj /g
-s/Ó/oo /g
-s/Ø/rzs /g
-s/©/sz /g
-s/«/tj /g
-s/Ú/uu /g
-s/Ù/uu /g
-s/İ/ii /g
-s/®/zs /g
+s/Ã/aa /g
+s/ÄŒ/cz /g
+s/Ä/dj /g
+s/Ã‰/ee /g
+s/Ã/ii /g
+s/Å‡/nj /g
+s/Ã“/oo /g
+s/Å˜/rzs /g
+s/Å /sz /g
+s/Å¤/tj /g
+s/Ãš/uu /g
+s/Å®/uu /g
+s/Ã/ii /g
+s/Å½/zs /g
 s/Y/i /g
 s/&/dzs /g
 s/@/ts /g
