@@ -2,7 +2,7 @@ SHELL=/bin/bash
 MOSESROOT = /home/mmachace/mosesdecoder
 TOKENIZER = $(MOSESROOT)/scripts/tokenizer/tokenizer.perl
 
-.PHONY: all clean
+.PHONY: all clean coded_sounds
 
 all: phones0.mlf
 
@@ -36,7 +36,14 @@ words.mlf: sentences-clean
 phones0.mlf: words.mlf dict
 	HLEd -l '*' -d dict -i $@ mkphones0.led $<
 
+# Seznam zvukovych souboru ke kodovani
+codestr.scp:
+	scripts/genScp.bash data-train > $@
+
+coded_sounds: codestr.scp
+	HCopy -T 1 -C config -S $<
+
 
 
 clean:
-	rm -rf sentences-clean words dict *.mlf
+	rm -rf sentences-clean words dict *.mlf data-train/*.mfc codestr.scp
