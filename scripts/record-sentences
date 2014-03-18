@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+# Std library imports
+import argparse
+import sys
+import os
+from itertools import count
+
+def parse_args():
+    
+    parser = argparse.ArgumentParser(
+            description="Records an audio file for each input line",
+            epilog="Author: Matous Machacek <machacekmatous@gmail.com>",
+            )
+
+    parser.add_argument("input",
+            help="An input file with words (one word per line)",
+            default=sys.stdin,
+            type=argparse.FileType('r')
+            )
+    
+    parser.add_argument("--prefix",
+            help="Prefix which will be used in output audio files",
+            default="sentence",
+            )
+    return parser.parse_args()
+
+
+def main(): 
+    args = parse_args()
+
+
+    for i, line in zip(count(1), args.input):
+        sentence = line.strip()
+        audio_file_name = args.prefix + "-%s.wav" % i
+
+        print(50*"\n")
+        print(sentence)
+        print("")
+        os.system("rec -c 1 -r 22050 %s" % audio_file_name)
+
+if __name__ == '__main__':
+    main()
