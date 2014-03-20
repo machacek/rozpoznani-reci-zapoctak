@@ -38,10 +38,13 @@ phones0.mlf: words.mlf dict
 
 # Seznam zvukovych souboru ke kodovani
 codestr.scp:
-	scripts/genScp.bash data-train > $@
+	scripts/genScp.bash data-train | sort -t- -k3n > $@
 
 coded_sounds: codestr.scp
 	HCopy -T 1 -C config -S $<
+
+train.scp: codestr.scp
+	cat $< | cut "-d " -f2 > $@
 
 
 
