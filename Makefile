@@ -4,7 +4,7 @@ TOKENIZER = $(MOSESROOT)/scripts/tokenizer/tokenizer.perl
 
 .PHONY: all clean
 
-all: hmm0
+all: hmm3
 
 # Tokenizovana a vycistena data
 sentences-clean: data-train/sentences-original
@@ -120,6 +120,11 @@ hmm3: hmm2 config1 phones0.mlf train.scp monophones0
 		-H $</hmmdefs \
 		-M $@ \
 		monophones0
+
+hmm4: hmm3 sp_state
+	rm -rf $@
+	cp -r $< $@
+	cat sp_state >> $@/hmmdefs
 
 
 
