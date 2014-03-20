@@ -11,6 +11,7 @@ sentences-clean
 words
 wdnet.lat
 dict.test
+test_vety.txt
 
 # C extensions
 *.so

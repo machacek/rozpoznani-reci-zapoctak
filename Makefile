@@ -231,20 +231,10 @@ hmm9: hmm8 config1 aligned.mlf train-filtered.scp monophones1
 		-M $@ \
 		monophones1
 
-#
-# Testovani
-#
-wdnet.lat: data-test/wdnet.grm
-	HParse $< $@
-
-dict.test: data-test/dict.tst.base
-	cat $< \
-		| sort -u \
-		| scripts/vyslov.sh \
-		> $@
-
-test_vety.txt: wdnet.lat dict.test
-	HSGen -n 40 wdnet.lat dict.test > $@
+# Testovaci data
+data-test:
+	$(MAKE) -C $@	
 
 clean:
-	rm -rf sentences-clean words dict *.mlf data-train/*.mfc *.scp hmm* coded_sounds aligned.mlf wdnet.lat dict.test
+	rm -rf sentences-clean words dict *.mlf data-train/*.mfc *.scp hmm* coded_sounds aligned.mlf
+	$(MAKE) -C $@ clean
