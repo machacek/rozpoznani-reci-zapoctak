@@ -149,7 +149,31 @@ phones1.mlf: words.mlf dict mkphones1.led
 		mkphones1.led \
 		$<
 
+hmm6: hmm5 config1 phones1.mlf train.scp monophones1
+	rm -rf $@; mkdir $@
+	HERest \
+		-T 1 \
+		-C config1 \
+		-I phones1.mlf \
+		-t 250.0 150.0 1000.0 \
+		-S train.scp \
+		-H $</macros \
+		-H $</hmmdefs \
+		-M $@ \
+		monophones1
 
+hmm7: hmm6 config1 phones1.mlf train.scp monophones1
+	rm -rf $@; mkdir $@
+	HERest \
+		-T 1 \
+		-C config1 \
+		-I phones1.mlf \
+		-t 250.0 150.0 1000.0 \
+		-S train.scp \
+		-H $</macros \
+		-H $</hmmdefs \
+		-M $@ \
+		monophones1
 
 
 
