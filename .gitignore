@@ -6,7 +6,7 @@ hmm*
 *.scp
 coded_sounds
 dict
-phones0.mlf
+phones*.mlf
 sentences-clean
 words
 words.mlf

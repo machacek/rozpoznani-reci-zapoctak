@@ -37,7 +37,12 @@ words.mlf: sentences-clean
 
 # Prevod do fonetickeho MLF formatu
 phones0.mlf: words.mlf dict mkphones0.led
-	HLEd -l '*' -d dict -i $@ mkphones0.led $<
+	HLEd \
+		-l '*' \
+		-d dict \
+		-i $@ \
+		mkphones0.led \
+		$<
 
 # Seznam zvukovych souboru ke kodovani
 codestr.scp: data-train
@@ -134,6 +139,15 @@ hmm5: hmm4 sil.hed monophones1
 		-M $@ \
 		sil.hed \
 		monophones1
+
+# Prevod do fonetickeho MLF formatu (tentokrat i s sp)
+phones1.mlf: words.mlf dict mkphones1.led
+	HLEd \
+		-l '*' \
+		-d dict \
+		-i $@ \
+		mkphones1.led \
+		$<
 
 
 
