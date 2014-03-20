@@ -4,7 +4,7 @@ TOKENIZER = $(MOSESROOT)/scripts/tokenizer/tokenizer.perl
 
 .PHONY: all clean
 
-all: hmm3
+all: hmm7
 
 # Tokenizovana a vycistena data
 sentences-clean: data-train/sentences-original
@@ -30,6 +30,7 @@ dict: words
 		| scripts/vyslov.sh \
 		| sed "s/d ě/dj e/g" \
 		> $@
+	echo "silence sil" >> $@
 
 # Prevod do slovniho MLF formatu
 words.mlf: sentences-clean
@@ -175,9 +176,60 @@ hmm7: hmm6 config1 phones1.mlf train.scp monophones1
 		-M $@ \
 		monophones1
 
+# Kontrola: Foneticky prepis
+aligned.mlf: hmm7 config1 words.mlf train.scp dict monophones1
+	HVite \
+		-T 1 \
+		-l '*' \
+		-o SWT \
+		-b silence \
+		-C config1 \
+		-a \
+		-H $</macros \
+		-H $</hmmdefs \
+		-i $@ \
+		-m \
+		-t 250.0 \
+		-I words.mlf \
+		-S train.scp \
+		-y lab \
+		dict \
+		monophones1
 
+# Vyfiltrovany seznam vet
+train-filtered.scp: aligned.mlf
+	cat $< \
+		| grep "^\".*\"$$" \
+		| sed "s/\"//g" \
+		| sed "s/\*/data-train/" \
+		| sed "s/lab/mfc/" \
+		> $@
 
+hmm8: hmm7 config1 aligned.mlf train-filtered.scp monophones1
+	rm -rf $@; mkdir $@
+	HERest \
+		-T 1 \
+		-C config1 \
+		-I aligned.mlf \
+		-t 250.0 150.0 1000.0 \
+		-S train-filtered.scp \
+		-H $</macros \
+		-H $</hmmdefs \
+		-M $@ \
+		monophones1
 
+hmm9: hmm8 config1 aligned.mlf train-filtered.scp monophones1
+	rm -rf $@; mkdir $@
+	HERest \
+		-T 1 \
+		-C config1 \
+		-I aligned.mlf \
+		-t 250.0 150.0 1000.0 \
+		-S train-filtered.scp \
+		-H $</macros \
+		-H $</hmmdefs \
+		-M $@ \
+		monophones1
 
 clean:
-	rm -rf sentences-clean words dict *.mlf data-train/*.mfc *.scp hmm* coded_sounds
+	rm -rf sentences-clean words dict *.mlf data-train/*.mfc *.scp hmm* coded_sounds aligned.mlf

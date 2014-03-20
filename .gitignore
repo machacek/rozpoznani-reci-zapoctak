@@ -6,10 +6,9 @@ hmm*
 *.scp
 coded_sounds
 dict
-phones*.mlf
+*.mlf
 sentences-clean
 words
-words.mlf
 
 # C extensions
 *.so
