@@ -126,6 +126,16 @@ hmm4: hmm3 sp_state
 	cp -r $< $@
 	cat sp_state >> $@/hmmdefs
 
+hmm5: hmm4 sil.hed monophones1
+	rm -rf $@; mkdir $@
+	HHEd \
+		-H $</macros \
+		-H $</hmmdefs \
+		-M $@ \
+		sil.hed \
+		monophones1
+
+
 
 
 

@@ -4,6 +4,12 @@
 data-train/sentence-*.mfc
 hmm*
 *.scp
+coded_sounds
+dict
+phones0.mlf
+sentences-clean
+words
+words.mlf
 
 # C extensions
 *.so
