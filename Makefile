@@ -4,7 +4,7 @@ TOKENIZER = $(MOSESROOT)/scripts/tokenizer/tokenizer.perl
 
 .PHONY: all clean
 
-all: hmm7
+all: hmm9
 
 # Tokenizovana a vycistena data
 sentences-clean: data-train/sentences-original
@@ -231,5 +231,20 @@ hmm9: hmm8 config1 aligned.mlf train-filtered.scp monophones1
 		-M $@ \
 		monophones1
 
+#
+# Testovani
+#
+wdnet.lat: data-test/wdnet.grm
+	HParse $< $@
+
+dict.test: data-test/dict.tst.base
+	cat $< \
+		| sort -u \
+		| scripts/vyslov.sh \
+		> $@
+
+test_vety.txt: wdnet.lat dict.test
+	HSGen -n 40 wdnet.lat dict.test > $@
+
 clean:
-	rm -rf sentences-clean words dict *.mlf data-train/*.mfc *.scp hmm* coded_sounds aligned.mlf
+	rm -rf sentences-clean words dict *.mlf data-train/*.mfc *.scp hmm* coded_sounds aligned.mlf wdnet.lat dict.test

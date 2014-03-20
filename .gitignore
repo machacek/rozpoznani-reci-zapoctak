@@ -9,6 +9,8 @@ dict
 *.mlf
 sentences-clean
 words
+wdnet.lat
+dict.test
 
 # C extensions
 *.so
