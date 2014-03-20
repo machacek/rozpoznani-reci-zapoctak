@@ -1,5 +1,10 @@
 *.py[cod]
 
+
+data-train/sentence-*.mfc
+hmm*
+*.scp
+
 # C extensions
 *.so
 
