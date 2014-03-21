@@ -4,7 +4,7 @@ TOKENIZER = $(MOSESROOT)/scripts/tokenizer/tokenizer.perl
 
 .PHONY: all clean
 
-all: hmm9
+all: results
 
 # Tokenizovana a vycistena data
 sentences-clean: data-train/sentences-original
@@ -263,7 +263,7 @@ recout.mlf: hmm9 test.scp data-test monophones1
 		-H $</macros \
 		-H $</hmmdefs \
 		-S test.scp \
-		-l '*' \
+		-l 'data-test' \
 		-i $@ \
 		-w data-test/wdnet.lat \
 		-p 0.0 \
@@ -271,6 +271,14 @@ recout.mlf: hmm9 test.scp data-test monophones1
 		data-test/dict.test \
 		monophones1
 
+# Evaluace
+results: recout.mlf test_words.mlf monophones1
+	HResults \
+		-I test_words.mlf \
+		monophones1 \
+		$< \
+		| tee $@
+
 clean:
-	rm -rf sentences-clean words dict *.mlf data-train/*.mfc data-test/*.mfc *.scp hmm* coded_sounds test_coded_sounds aligned.mlf 
+	rm -rf sentences-clean words dict *.mlf data-train/*.mfc data-test/*.mfc *.scp hmm* coded_sounds test_coded_sounds aligned.mlf results
 	$(MAKE) -C $@ clean

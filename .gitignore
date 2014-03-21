@@ -14,6 +14,7 @@ words
 wdnet.lat
 dict.test
 test_vety.txt
+results
 
 # C extensions
 *.so
