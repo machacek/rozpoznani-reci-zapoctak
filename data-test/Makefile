@@ -2,7 +2,7 @@ SHELL=/bin/bash
 
 .PHONY: all clean
 
-all: test_vety.txt
+all: wdnet.lat dict.test test_vety.txt
 
 wdnet.lat: wdnet.grm
 	HParse $< $@

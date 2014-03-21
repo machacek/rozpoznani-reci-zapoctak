@@ -2,7 +2,7 @@ SHELL=/bin/bash
 MOSESROOT = /home/mmachace/mosesdecoder
 TOKENIZER = $(MOSESROOT)/scripts/tokenizer/tokenizer.perl
 
-.PHONY: all clean
+.PHONY: all clean data-test
 
 all: results
 
@@ -256,7 +256,7 @@ test_words.mlf: data-test/test_vety_fixed.txt
 	cat $< | scripts/toMLF.bash data-test > $@
 
 # Rozpoznani vet
-recout.mlf: hmm9 test.scp data-test monophones1
+recout.mlf: hmm9 test.scp data-test monophones1 test_coded_sounds
 	HVite \
 		-T 1 \
 		-C config1 \
@@ -281,4 +281,4 @@ results: recout.mlf test_words.mlf monophones1
 
 clean:
 	rm -rf sentences-clean words dict *.mlf data-train/*.mfc data-test/*.mfc *.scp hmm* coded_sounds test_coded_sounds aligned.mlf results
-	$(MAKE) -C $@ clean
+	$(MAKE) clean -C data-test
