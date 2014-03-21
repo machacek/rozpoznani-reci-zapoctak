@@ -1,6 +1,4 @@
 SHELL=/bin/bash
-MOSESROOT = /home/mmachace/mosesdecoder
-TOKENIZER = $(MOSESROOT)/scripts/tokenizer/tokenizer.perl
 
 .PHONY: all clean data-test
 
@@ -9,18 +7,18 @@ all: results
 # Tokenizovana a vycistena data
 sentences-clean: data-train/sentences-original
 	cat $< \
-		| sed "s/[-'\"„“?!():–,.]//g" \
-		| $(TOKENIZER) \
-		| perl -nle "use utf8; use open qw(:std :utf8); print lc" \
+		| sed "s/[-'\"„“?!():–,.]/ /g" \
+		| sed "s/\s\s*/ /g" \
+		| sed "s/^\s*//" \
+		| sed "s/\s*$$//" \
+		| perl -nle "use utf8; use open qw(:std :utf8); print uc" \
 		> $@
 
 # Mnozina pouzitych slov
 words: sentences-clean
 	cat $< \
 		| tr " " "\n" \
-		| perl -nle "use utf8; use open qw(:std :utf8); print uc" \
 		| sort -u \
-		| grep -v "^[ 	]*$$" \
 		| scripts/convert-numbers.sh \
 		> $@
 
