@@ -34,7 +34,7 @@ dict: words
 
 # Prevod do slovniho MLF formatu
 words.mlf: sentences-clean
-	cat $< | scripts/toMLF.bash > $@
+	cat $< | scripts/toMLF.bash data-train > $@
 
 # Prevod do fonetickeho MLF formatu
 phones0.mlf: words.mlf dict mkphones0.led
@@ -250,6 +250,26 @@ test_coded_sounds: test_codestr.scp config
 # Seznam zakodovanych souboru
 test.scp: test_codestr.scp
 	cat $< | cut "-d " -f2 > $@
+
+# Prevod do slovniho MLF formatu
+test_words.mlf: data-test/test_vety_fixed.txt
+	cat $< | scripts/toMLF.bash data-test > $@
+
+# Rozpoznani vet
+recout.mlf: hmm9 test.scp data-test monophones1
+	HVite \
+		-T 1 \
+		-C config1 \
+		-H $</macros \
+		-H $</hmmdefs \
+		-S test.scp \
+		-l '*' \
+		-i $@ \
+		-w data-test/wdnet.lat \
+		-p 0.0 \
+		-s 5.0 \
+		data-test/dict.test \
+		monophones1
 
 clean:
 	rm -rf sentences-clean words dict *.mlf data-train/*.mfc data-test/*.mfc *.scp hmm* coded_sounds test_coded_sounds aligned.mlf 
