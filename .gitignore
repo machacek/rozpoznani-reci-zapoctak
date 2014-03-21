@@ -2,9 +2,11 @@
 
 
 data-train/sentence-*.mfc
+data-test/sentence-*.mfc
 hmm*
 *.scp
 coded_sounds
+test_coded_sounds
 dict
 *.mlf
 sentences-clean

@@ -235,6 +235,22 @@ hmm9: hmm8 config1 aligned.mlf train-filtered.scp monophones1
 data-test:
 	$(MAKE) -C $@	
 
+# Seznam zvukovych souboru ke kodovani
+test_codestr.scp:
+	scripts/genScp.bash data-test | sort -t- -k3n > $@
+
+# Kodovani zvukovych souboru do mfc formatu
+test_coded_sounds: test_codestr.scp config
+	HCopy \
+		-T 1 \
+		-C config \
+		-S $< \
+		> $@
+
+# Seznam zakodovanych souboru
+test.scp: test_codestr.scp
+	cat $< | cut "-d " -f2 > $@
+
 clean:
-	rm -rf sentences-clean words dict *.mlf data-train/*.mfc *.scp hmm* coded_sounds aligned.mlf
+	rm -rf sentences-clean words dict *.mlf data-train/*.mfc data-test/*.mfc *.scp hmm* coded_sounds test_coded_sounds aligned.mlf 
 	$(MAKE) -C $@ clean
